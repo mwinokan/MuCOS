@@ -4,5 +4,5 @@ Multi-SuCOS: Score derivative compounds based how well they recapitulate the sha
 Based on:
 
 - [SuCOS](https://github.com/susanhleung/SuCOS)
-- OpenEye Tversky
+- [OpenEye Tversky](https://docs.eyesopen.com/applications/rocs/theory/measure_similarity.html#tversky)
 - [Malhotra and Karanicolas' COS measure](https://pubs.acs.org/doi/abs/10.1021/acs.jmedchem.6b00725)
