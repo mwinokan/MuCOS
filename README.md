@@ -1,7 +1,7 @@
 # 🐄 MuCOS
 Multi-SuCOS: Score derivative compounds based how well they recapitulate the shape and colour of multiple (fragment) inspiration hits 
 
-Based on:
+## Based on:
 
 - [SuCOS](https://github.com/susanhleung/SuCOS)
 - [OpenEye Tversky](https://docs.eyesopen.com/applications/rocs/theory/measure_similarity.html#tversky)
