@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "MuCOS"
+version = "0.1"
+authors = [
+    { name = "Max Winokan", email = "max@winokan.com" },
+]
+description = "Multi-SuCOS: Score derivative compounds based how well they recapitulate the shape and colour of multiple (fragment) inspiration hits"
+readme = "README.md"
+requires-python = ">=3.10"
+requires = []
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "mpytools >= 0.0.9",
+    "molparse",
+    "pandas",
+    "rich",
+    "rdkit",
+]
+[project.urls]
+"Homepage" = "https://github.com/mwinokan/MuCOS"
+"Bug Tracker" = "https://github.com/mwinokan/MuCOS/issues"
+[tool.hatch.build]
+include = [
+    "mucos/*.py",
+]
