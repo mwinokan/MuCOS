@@ -263,10 +263,11 @@ def MuCOS_score(
         )
 
     if debug or print_scores or return_all:
-        df = DataFrame(inspiration_data)
-        df = df.groupby("atom_ids").max("score")
-        recapitulation_count = len(df[df["score"] > recapitulation_threshold])
-        recapitulation_fraction = recapitulation_count / len(df)
+        if not multi:
+            df = DataFrame(inspiration_data)
+            df = df.groupby("atom_ids").max("score")
+            recapitulation_count = len(df[df["score"] > recapitulation_threshold])
+            recapitulation_fraction = recapitulation_count / len(df)
 
     feature_score = clip(feature_score, 0, 1)
 
@@ -297,15 +298,19 @@ def MuCOS_score(
         mrich.var("feature_score", feature_score)
         mrich.var("volume_score", volume_score)
         mrich.var("average_score", SuCOS_score)
-        mrich.var("recapitulation_count", recapitulation_count)
+        if not multi:
+            mrich.var("recapitulation_count", recapitulation_count)
 
     if return_all:
-        return dict(
+        result = dict(
             average_score=SuCOS_score,
             feature_score=feature_score,
             volume_score=volume_score,
-            recapitulation_count=recapitulation_count,
-            recapitulation_fraction=recapitulation_fraction,
         )
+        if not multi:
+            result["recapitulation_count"] = (recapitulation_count,)
+            result["recapitulation_fraction"] = (recapitulation_fraction,)
+
+        return result
     else:
         return SuCOS_score

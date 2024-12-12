@@ -2,7 +2,7 @@
 
 > pronounced: "moo-cos"
 
-Multi-SuCOS: Score derivative compounds based how well they recapitulate the shape and colour of multiple (fragment) inspiration hits 
+Multi-SuCOS: Score derivative compounds based how well they recapitulate the shape and colour of multiple (fragment) inspiration hits
 
 ## Based on:
 

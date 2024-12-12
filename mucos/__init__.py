@@ -1,1 +1,1 @@
-from mucos import MuCOS_score
+from .mucos import MuCOS_score
