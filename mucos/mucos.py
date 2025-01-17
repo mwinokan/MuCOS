@@ -100,8 +100,8 @@ def feature_map_score(
         if draw:
             from molparse.rdkit.draw import draw_flat
 
-            display(draw_flat(inspiration, indices=True))
-            display(draw_flat(derivative, indices=True))
+            display(draw_flat(inspiration, indices=True, size=(400, 200)))
+            display(draw_flat(derivative, indices=True, size=(400, 200)))
 
         table = Table(title="inspiration features")
         table.add_column("family")
@@ -232,6 +232,90 @@ def multi_feature_map_score(
 
 
 def MuCOS_score(
+    inspiration: "rdkit.Chem.Mol | list[rdkit.Chem.Mol]",
+    derivative: "rdkit.Chem.Mol",
+    recapitulation_threshold: float = 0.6,
+    return_all: bool = False,
+    print_scores: bool = False,
+    debug: bool = False,
+    draw: bool = False,
+    **kwargs,
+):
+    """Compute the multi-SuCOS score between inspiration and derivative molecules"""
+
+    if isinstance(inspiration, list):
+        if len(inspiration) == 1:
+            multi = False
+            inspiration = inspiration[0]
+        else:
+            multi = True
+    else:
+        multi = False
+
+    if multi:
+        feature_score = multi_feature_map_score(
+            inspiration, derivative, debug=debug, draw=draw, **kwargs
+        )
+        inspiration_data = []
+    else:
+        feature_score, inspiration_data = feature_map_score(
+            inspiration, derivative, debug=debug, draw=draw, return_data=True, **kwargs
+        )
+
+    if debug or print_scores or return_all:
+        if not multi:
+            df = DataFrame(inspiration_data)
+            df = df.groupby("atom_ids").max("score")
+            recapitulation_count = len(df[df["score"] > recapitulation_threshold])
+            recapitulation_fraction = recapitulation_count / len(df)
+
+    feature_score = clip(feature_score, 0, 1)
+
+    if multi:
+
+        mol = inspiration.pop()
+
+        while inspiration:
+            mol = CombineMols(mol, inspiration.pop())
+
+        protrude_dist = rdShapeHelpers.ShapeProtrudeDist(
+            derivative, mol, allowReordering=False
+        )
+
+    else:
+        protrude_dist = rdShapeHelpers.ShapeProtrudeDist(
+            inspiration, derivative, allowReordering=False
+        )
+
+    protrude_dist = clip(protrude_dist, 0, 1)
+    volume_score = 1 - protrude_dist
+
+    SuCOS_score = (feature_score + volume_score) * 0.5
+
+    if debug or print_scores:
+        if debug:
+            mrich.h3("scores")
+        mrich.var("feature_score", feature_score)
+        mrich.var("volume_score", volume_score)
+        mrich.var("average_score", SuCOS_score)
+        if not multi:
+            mrich.var("recapitulation_count", recapitulation_count)
+
+    if return_all:
+        result = dict(
+            average_score=SuCOS_score,
+            feature_score=feature_score,
+            volume_score=volume_score,
+        )
+        if not multi:
+            result["recapitulation_count"] = (recapitulation_count,)
+            result["recapitulation_fraction"] = (recapitulation_fraction,)
+
+        return result
+    else:
+        return SuCOS_score
+
+def MuCOS2_score(
     inspiration: "rdkit.Chem.Mol | list[rdkit.Chem.Mol]",
     derivative: "rdkit.Chem.Mol",
     recapitulation_threshold: float = 0.6,
