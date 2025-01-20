@@ -315,6 +315,7 @@ def MuCOS_score(
     else:
         return SuCOS_score
 
+
 def MuCOS2_score(
     inspiration: "rdkit.Chem.Mol | list[rdkit.Chem.Mol]",
     derivative: "rdkit.Chem.Mol",
