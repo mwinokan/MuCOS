@@ -4,13 +4,15 @@ import numpy as np
 import pandas as pd
 
 
-def display_overlaps(inspiration_mols, derivative_mol):
+def display_overlaps(inspiration_mols, derivative_mol, draw_indices: bool = False):
 
     mp.rdkit.draw_mols(inspiration_mols + [derivative_mol])
 
     from .df import combined_dataframe
 
     df = combined_dataframe(inspiration_mols, derivative_mol)
+
+    df = df[df["category"] == "atom"]
 
     derivative_volume_df = annotate_overlaps(df)
     inspiration_volume_df = annotate_overlaps(df, invert=True)
@@ -30,7 +32,9 @@ def display_overlaps(inspiration_mols, derivative_mol):
             (j, (0.5, 0, 0)) for j in subdf[~subdf["intersection_threshold"]].index
         ]
 
-        display(mp.rdkit.draw_highlighted_mol(mol, colors, flat=True))
+        display(
+            mp.rdkit.draw_highlighted_mol(mol, colors, flat=True, indices=draw_indices)
+        )
 
     colors = [
         (j, (0, 0.5, 0))
@@ -47,7 +51,11 @@ def display_overlaps(inspiration_mols, derivative_mol):
 
     derivative_mol._Name = "derivative"
     mrich.h3(derivative_mol._Name)
-    display(mp.rdkit.draw_highlighted_mol(derivative_mol, colors, flat=True))
+    display(
+        mp.rdkit.draw_highlighted_mol(
+            derivative_mol, colors, flat=True, indices=draw_indices
+        )
+    )
 
 
 def annotate_overlaps(df, invert: bool = False) -> "pd.DataFrame":
