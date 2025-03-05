@@ -290,6 +290,8 @@ def MuCOS_score(
     protrude_dist = clip(protrude_dist, 0, 1)
     volume_score = 1 - protrude_dist
 
+
+
     SuCOS_score = (feature_score + volume_score) * 0.5
 
     if debug or print_scores:
@@ -370,8 +372,18 @@ def MuCOS2_score(
     else:
         protrude_dist = rdShapeHelpers.ShapeProtrudeDist(
             inspiration, derivative, allowReordering=False
-        )
+            )
+        protrude_dist_ord = rdShapeHelpers.ShapeProtrudeDist(
+            inspiration, derivative, allowReordering=True
+            )
+        tanimoto_dist = rdShapeHelpers.ShapeTanimotoDist(
+            inspiration, derivative
+            )
+        tversky_dist = rdShapeHelpers.ShapeTverskyIndex(
+            inspiration, derivative, alpha=0.5, beta=0.5
+            )
 
+    vol_score_unclipped = 1 - protrude_dist
     protrude_dist = clip(protrude_dist, 0, 1)
     volume_score = 1 - protrude_dist
 
@@ -391,6 +403,9 @@ def MuCOS2_score(
             average_score=SuCOS_score,
             feature_score=feature_score,
             volume_score=volume_score,
+            tanimoto_dist=tanimoto_dist,
+            tversky_dist=tversky_dist,
+            vol_score_unclipped=vol_score_unclipped,
         )
         if not multi:
             result["recapitulation_count"] = (recapitulation_count,)
